@@ -9,43 +9,45 @@ sealed public class Timer
     public event Delegate OnLooped;
     public event Delegate OnCompleted;
 
-    // GetTimeRemaining
-    // GetDuration
-    // GetElapsed
-    // GetLoopCount
-
     public Timer(float Duration) : this(Duration, 0) { }
 
     public Timer(float Duration, int Loops)
     {
         duration = Duration;
         remaining = Duration;
-        loopsNum = 0;
-        loopsMax = Loops;
+        loopsCount = 0;
+        loopsTotal = Loops;
         isRunning = false;
     }
 
     public void Start()
     {
-        isRunning = true;
+		if (isRunning == true)
+			return;
 
-        OnStarted.Invoke();
+		isRunning = true;
+
+		if (OnStarted != null) OnStarted();
     }
 
     public void Stop()
     {
+		if (isRunning == false)
+			return;
+
         isRunning = false;
 
-        OnStopped.Invoke();
-    }
+		if (OnStopped != null) OnStopped();
+	}
 
     public void Restart()
     {
         remaining = duration;
-        loopsNum = 0;
+        loopsCount = 0;
+		isRunning = true;
 
-        OnRestarted.Invoke();
-    }
+		if (OnRestarted != null) OnRestarted();
+	}
 
     public void Scrub(float time)
     {
@@ -70,13 +72,14 @@ sealed public class Timer
         // the timer isn't about to finish
         if (remaining > 0.0f)
         {
-            OnUpdated.Invoke();
-        }
+			if (OnUpdated != null) OnUpdated();
+		}
         // -1 indicates an infinitly looping timer
-        else if (loopsMax == -1 || loopsNum < loopsMax)
+        else if (loopsTotal == -1 || loopsCount < loopsTotal)
         {
             Internal_Looped();
-        }
+			Internal_Updated();
+		}
         else
         {
             Internal_Completed();
@@ -86,22 +89,29 @@ sealed public class Timer
     private void Internal_Looped()
     {
         remaining += duration;
-        loopsNum++;
+        loopsCount++;
 
-        OnLooped.Invoke();
-    }
+		if (OnLooped != null) OnLooped();
+	}
 
     private void Internal_Completed()
     {
-        isRunning = false;
+		remaining = 0.0f;
+		isRunning = false;
 
-        OnCompleted.Invoke();
-    }
+		if (OnCompleted != null) OnCompleted();
+	}
 
-    private float duration;
+	public float Duration	{ get { return duration; } }
+	public float Elapsed	{ get { return duration - remaining; } }
+	public float Remaining	{ get { return remaining; } }
+	public int LoopsCount	{ get { return loopsCount; } }
+	public int LoopsTotal	{ get { return loopsTotal; } }
+	public bool IsRunning	{ get { return isRunning; } }
+
+	private float duration;
     private float remaining;
-    private int loopsNum;
-    private int loopsMax;
-
+    private int loopsCount;
+    private int loopsTotal;
     private bool isRunning;
 }
