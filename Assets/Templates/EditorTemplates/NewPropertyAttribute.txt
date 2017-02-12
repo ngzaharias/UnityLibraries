@@ -1,0 +1,19 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+//!IMPORTANT! Script must be placed NOT INSIDE a Editor folder
+
+[CustomPropertyDrawer(typeof())]
+public class #SCRIPTNAME# : PropertyAttribute 
+{
+	int 	a;
+	float 	b;
+	bool 	c;
+	
+	public #SCRIPTNAME#(int A, float B, bool C) 
+	{
+		a = A;
+		b = B;
+		c = C;
+	}
+}

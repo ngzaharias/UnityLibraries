@@ -1,0 +1,8 @@
+﻿using UnityEditor;
+using UnityEngine;
+
+[CustomEditor(typeof())]
+public class #SCRIPTNAME# : Editor 
+{
+
+}
