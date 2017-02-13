@@ -1,0 +1,11 @@
+﻿using UnityEditor;
+using UnityEngine;
+using System.IO;
+
+namespace ScriptTemplates
+{
+	public class TemplateContextMenus
+	{
+%BODY%
+	}
+}
